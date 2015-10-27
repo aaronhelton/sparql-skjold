@@ -1,0 +1,7 @@
+{% block content %}
+  {{ pref_label.name.value }}<hr/>
+  Showing {{ vote_records|length }} records:<br/>
+  {% for vote in vote_records %}
+    {{vote.vc.value}} {{vote.resolution.value}} {{vote.title.value}} [<a href="{% url 'votedb:vote_record' vote.y.value %}">Show Vote Record</a>]<br/>
+  {% endfor %}
+{% endblock %}

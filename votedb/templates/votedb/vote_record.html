@@ -1,0 +1,23 @@
+{% block content %}
+  {{ pref_label.title.value }}<hr/>
+  Report(s): 
+  {% for report in reports %}
+    <a href="{{report.uri.value }}">{{ report.report.value }}</a>&nbsp;
+  {% endfor %}<br/>
+  Meeting(s):
+  {% for meeting in meetings %}
+    <a href="{{meeting.uri.value}}">{{ meeting.meeting.value }}</a>&nbsp;
+  {% endfor %}<br/>
+  Resolution(s):
+  {% for resolution in resolutions %}
+    <a href="{{resolution.uri.value}}">{{ resolution.resolution.value }}</a>&nbsp;
+  {% endfor %}<br/><br/>
+  Results:</br>
+  {% for res in result_records %}
+    {{ res.vote.value }} {{ res.count.value }}<br/>
+  {% endfor %}<br/>
+  Vote Record:<br/>
+  {% for cv in country_votes %}
+    {{ cv.what.value }} <a href="{% url 'votedb:member_state' cv.c.value %}">{{ cv.who.value }}</a><br/> 
+  {% endfor %}
+{% endblock %}

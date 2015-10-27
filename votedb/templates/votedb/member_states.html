@@ -1,0 +1,5 @@
+{% block content %}
+  {% for result in results %}
+    <a href="{% url 'votedb:member_state' result.x.value %}">{{ result.name.value }}</a><br/>
+  {% endfor %}
+{% endblock %}
