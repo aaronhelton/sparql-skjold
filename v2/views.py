@@ -10,6 +10,7 @@ from operator import itemgetter, attrgetter
 from icu import Collator, Locale
 from SPARQLWrapper import SPARQLWrapper, JSON, TURTLE, N3
 from v2.queries import QUERIES, get_preferred_label, get_all_labels
+from pure_pagination import Paginator, EmptyPage, PageNotAnInteger
 
 VOTEDB_ASPECTS = ['index','organizations','bodies','sessions','member_states']
 VOTEDB_TYPES = ['member_state','organization','body','session','vote_record']
@@ -19,6 +20,9 @@ ASPECT_MAP = {
   'sessions':'session',
   'member_states':'member_state',
   'index':'member_state',
+}
+AUTO_CHILDREN = {
+  'member_state': ['member_sessions','member_vote_records'],
 }
 
 sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)
@@ -34,7 +38,14 @@ def index(request):
       results = sparql.query().convert()["results"]["bindings"]
       for res in results:
         res["pref_label"] = get_preferred_label(res['x']['value'], preferred_language)
-      return render(request, 'v2/index.html', {'results': results, 'children':ASPECT_MAP[aspect]})
+      sorted_results = sorted(results, key=lambda tup: tup['pref_label'], cmp=collator.compare)
+      try:
+        page = request.GET.get('page', 1)
+      except PageNotAnInteger:
+        page = 1
+      p = Paginator(sorted_results,15,request=request)
+      paginated_results = p.page(page)
+      return render(request, 'v2/index.html', {'results': paginated_results, 'children':ASPECT_MAP[aspect]})
     else:
       raise Http404("Aspect not found")
   else:
@@ -43,9 +54,16 @@ def index(request):
     sparql.setReturnFormat(JSON)
     results = sparql.query().convert()["results"]["bindings"]
     for res in results:
-      res["pref_label"] = get_preferred_label(res['x']['value'].encode("utf-8"), preferred_language)
+      res["pref_label"] = get_preferred_label(res['x']['value'], preferred_language)
     sorted_results = sorted(results, key=lambda tup: tup['pref_label'], cmp=collator.compare)
-    return render(request, 'v2/index.html', {'results': sorted_results, 'children':ASPECT_MAP[aspect]})
+    try:
+      page = request.GET.get('page', 1)
+    except PageNotAnInteger:
+      page = 1
+    p = Paginator(sorted_results,15,request=request)
+    paginated_results = p.page(page)
+
+    return render(request, 'v2/index.html', {'results': paginated_results, 'children':ASPECT_MAP[aspect]})
   
 
 def select(request):
@@ -57,8 +75,15 @@ def select(request):
     
     pref_label = get_preferred_label(uri, preferred_language)
     all_labels = get_all_labels(uri)
-      
-    return render(request, 'v2/' + v_type + '.html', {'pref_label': pref_label, 'all_labels': all_labels})
+    results = []
+    for q in AUTO_CHILDREN[v_type]:
+      sparql.setQuery(QUERIES[q].replace("{{replaceme}}",uri).replace("{{replacelang}}",preferred_language))
+      sparql.setReturnFormat(JSON)
+      q_results = sparql.query().convert()["results"]["bindings"]
+      for res in q_results:
+        res["pref_label"] = get_preferred_label(res[q]["value"], preferred_language)
+      results.append({'name':q, 'set': q_results})
+    return render(request, 'v2/' + v_type + '.html', {'pref_label': pref_label, 'all_labels': all_labels, 'results': results})
     #else:
     #  raise Http404("Not found")
   else:

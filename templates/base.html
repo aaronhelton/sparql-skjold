@@ -29,9 +29,14 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="/">UNLOD</a>
+        <a class="navbar-brand" href="/">SkjoLD</a>
         <div class="collapse navbar-collapse" id="main-navbar">
         <ul class="nav navbar-nav">
+          <li><a href="#">About</a></li>
+          <li><a href="#">Voting</a></li>
+          <li><a href="#">UNBIS Thesaurus</a></li>
+        </ul>
+        <ul class="nav navbar-nav pull-right">
           <li ><a class="ar" href="#">ﺎﻠﻋﺮﺒﻳﺓ</a></li>
           <li ><a class="zh" href="#">中文</a></li>
           <li ><a class="en" href="#">English</a></li>
@@ -47,14 +52,12 @@
     // This will work as long as there aren't language codes in the target URIs.
     $(document).ready(function() {
       loc = window.location.href;
-      console.log(loc);
       var c = ["ar","zh","en","fr","ru","es"]
       for (var i=0; i < c.length; i++) {
         new_loc = loc.replace("/{{ LANGUAGE_CODE }}/","/"+c[i]+"/");
-        console.log(new_loc);
         $( 'a.' + c[i] ).attr("href",new_loc);
       }
-      return new_loc;
+      console.log(window.location);
     });
   </script>
 

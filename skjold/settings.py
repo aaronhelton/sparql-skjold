@@ -37,7 +37,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'votedb',
+    'pure_pagination',
     'v2',
 )
 
@@ -121,3 +121,8 @@ LANGUAGES = (
     ('ru', _('Russian')),
     ('es', _('Spanish')),
 )
+
+PAGINATION_SETTINGS = {
+    'PAGE_RANGE_DISPLAYED': 10,
+    'MARGIN_PAGES_DISPLAYED': 2,
+}

@@ -1,10 +1,12 @@
 {% extends 'base.html' %}
 
+
 {% block content %}
 <div class="container">
+  {% include "v2/votedb.html" %}
   <div class="row">
     <div class="col-md-12">
-      <h2>{{ pref_label }}</h2><hr/>
+      <h2>{{ pref_label }}</h2>
     </div>
   </div>
   <div class="row">
@@ -24,22 +26,34 @@
         </ul>
       </div>
     </div>
-  </div>
-  <div class="row">
     <div class="col-md-4">
-      <!-- translate this -->
-      Voting Member in the following Session(s):
-      {% for s in member_sessions %}
-        {{ s }}<br/>
-      {% endfor %}<br/>
-      <!-- translate this -->
-      Vote Record Counts:</br>
-      {% for vote in vote_records %}
-        {{ vote.vc.value }}: {{vote.totalVotes.value}}<br/>
-      {% endfor %}
-      <!-- translate this -->
-      Show Vote Records
+      <div class="panel panel-default">
+        <div class="panel-heading">Voter in the following Session(s)</div>
+        <ul class="list-group">
+          {% for res in results %}
+            {% for r in res.set %}
+              {% if r.member_sessions %}
+                <li class="list-group-item">{{r.pref_label}} ({{r.count.value}})</li>
+              {% endif %}
+            {% endfor %}
+          {% endfor %}
+        </ul>
+      </div>
     </div>
-  </div>
-</div>
+    <div class="col-md-4">
+      <div class="panel panel-default">
+        <div class="panel-heading">Voter statistics for all Sessions</div>
+        <ul class="list-group">
+          {% for res in results %}
+            {% for r in res.set %}
+              {% if r.member_vote_records %}
+                <li class="list-group-item">{{ r.member_vote_records.value }}: {{ r.count.value }}</li>
+              {% endif %}
+            {% endfor %}
+          {% endfor %}
+        </ul>
+      </div><!-- panel -->
+    </div><!-- col -->
+  </div><!-- row -->
+</div><!-- container -->
 {% endblock %}
