@@ -14,14 +14,13 @@ sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)
 def index(request):
   querystring = """
     PREFIX undoc: <http://unontologies.s3-website-us-east-1.amazonaws.com/undoc#> 
-    select ?name { ?x rdf:type undoc:MemberState . 
-                   ?x skos:prefLabel ?label } 
-    filter (lang(?label)='en')
+    select ?x ?name { ?x rdf:type undoc:MemberState . 
+                   ?x skos:prefLabel ?name filter (lang(?name)='en') . }
   """
   sparql.setQuery(querystring)
   sparql.setReturnFormat(JSON)
-  results = sparql.query().convert()
-  return render(request, 'trippel/index.html', {'results': results["results"]["bindings"]})
+  results = sparql.query().convert()["results"]["bindings"]
+  return render(request, 'votedb/member_states.html', {'results': results})
 
 def member_states(request):
   querystring = """
@@ -57,7 +56,7 @@ def member_state(request, uri):
     PREFIX undoc: <http://unontologies.s3-website-us-east-1.amazonaws.com/undoc#> 
     select ?vc (COUNT(?x) AS ?totalVotes) { 
       ?x rdf:type undoc:CountryVote . 
-      ?x undoc:castBy <" + uri + "> . 
+      ?x undoc:castBy <""" + uri + """> . 
       ?x undoc:voteCharacter ?vc . } 
     GROUP BY ?vc
   """
@@ -74,6 +73,30 @@ def member_state(request, uri):
   vote_records = sparql.query().convert()["results"]["bindings"]
 
   return render(request, 'votedb/member_state.html', { 'pref_label': pref_label[0], 'pref_labels': pref_labels, 'vote_records': vote_records })
+
+def by_session(request, uri):
+  pref_label_q = """
+    PREFIX undoc: <http://unontologies.s3-website-us-east-1.amazonaws.com/undoc#>
+    select ?name { <""" + uri  + """> skos:prefLabel ?name  filter ( lang(?name) = 'en') }
+  """
+  vote_records_q = """
+    PREFIX undoc: <http://unontologies.s3-website-us-east-1.amazonaws.com/undoc#>
+    select ?resolution ?title {
+      ?y undoc:inSession <""" + uri + """> .
+      ?y dcterms:title ?title .
+      ?y undoc:resolution ?m .
+      ?m rdfs:label ?resolution . }
+    ORDER BY ?m
+  """
+  sparql.setQuery(pref_label_q)
+  sparql.setReturnFormat(JSON)
+  pref_label = sparql.query().convert()["results"]["bindings"]
+
+  sparql.setQuery(vote_records_q)
+  sparql.setReturnFormat(JSON)
+  vote_records = sparql.query().convert()["results"]["bindings"]
+
+  return render(request, 'votedb/by_session.html', { 'pref_label': pref_label[0], 'vote_records': vote_records })
 
 def by_member(request, uri):
   # to do: DRY out pref_label lookup

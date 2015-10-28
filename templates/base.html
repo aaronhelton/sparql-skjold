@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>UNLOD</title>
+  {% load staticfiles %}
+  {% load i18n %}
+  {% get_current_language as LANGUAGE_CODE %}
+  {% get_current_language_bidi as LANGUAGE_BIDI %}
+
+  <link rel="stylesheet" type="text/css" href="{% static '/static/bootstrap.min.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static '/static/jquery-ui.min.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static '/static/jquery-ui.structure.min.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static '/static/jquery-ui.theme.min.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static '/static/style.css' %}">
+  <script type="text/javascript" src="{% static '/static/jquery-2.1.4.min.js' %}"></script>
+  <script type="text/javascript" src="{% static '/static/jquery-ui.min.js' %}"></script>
+  <script type="text/javascript" src="{% static '/static/bootstrap.min.js' %}"></script>
+
+</head>
+{% if LANGUAGE_BIDI %}
+<body dir="rtl">
+{% else %}
+<body>
+{% endif %}
+    <nav class="navbar navbar-default">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-navbar" aria-expanded="false">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">UNLOD</a>
+        <div class="collapse navbar-collapse" id="main-navbar">
+        <ul class="nav navbar-nav">
+          <li ><a class="ar" href="#">ﺎﻠﻋﺮﺒﻳﺓ</a></li>
+          <li ><a class="zh" href="#">中文</a></li>
+          <li ><a class="en" href="#">English</a></li>
+          <li ><a class="fr" href="#">Français</a></li>
+          <li ><a class="ru" href="#">Русский</a></li>
+          <li ><a class="es" href="#">Español</a></li>
+        </ul>
+      </div>
+    </nav>
+    {% block content %}{% endblock content %}
+</body>
+  <script>
+    // This will work as long as there aren't language codes in the target URIs.
+    $(document).ready(function() {
+      loc = window.location.href;
+      console.log(loc);
+      var c = ["ar","zh","en","fr","ru","es"]
+      for (var i=0; i < c.length; i++) {
+        new_loc = loc.replace("/{{ LANGUAGE_CODE }}/","/"+c[i]+"/");
+        console.log(new_loc);
+        $( 'a.' + c[i] ).attr("href",new_loc);
+      }
+      return new_loc;
+    });
+  </script>
+
+</html>

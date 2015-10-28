@@ -1,6 +1,6 @@
 {% block content %}
   {{ pref_label.name.value }}<hr/>
-  {{ total_vote_records.count.value }} records. {{ adopted_without_vote.count.value }} adopted without vote.<br/><br/>
+  <a href="{% url 'votedb:by_session' request.path|cut:"/votedb/session/"%}">{{ total_vote_records.count.value }} records</a>. {{ adopted_without_vote.count.value }} adopted without vote.<br/><br/>
   Aggregate Results:<br>
   {% for result in aggregate_results %}
     {{result.vote.value}}: {{result.result.value}}<br/>

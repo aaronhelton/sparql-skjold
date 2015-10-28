@@ -1,0 +1,5 @@
+{% block content %}
+  {% for res in results %}
+    <a href="{% url 'v2:select' %}?uri={{ res.x.value }}&type={{ children }}">{{res.pref_label}}</a><br/>
+  {% endfor %}
+{% endblock %}

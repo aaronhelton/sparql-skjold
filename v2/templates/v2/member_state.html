@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h2>{{ pref_label }}</h2><hr/>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4">
+      <div class="panel panel-default">
+        <!-- translate this -->
+        <div class="panel-heading">Language Equivalents:</div>
+        <ul class="list-group">
+          {% for label in all_labels %}
+            <li class="list-group-item">
+            {{ label.label.value }}
+            {% if label.label.keys.0 == 'xml:lang' %}
+              ({{label.label.values.0}})
+            {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4">
+      <!-- translate this -->
+      Voting Member in the following Session(s):
+      {% for s in member_sessions %}
+        {{ s }}<br/>
+      {% endfor %}<br/>
+      <!-- translate this -->
+      Vote Record Counts:</br>
+      {% for vote in vote_records %}
+        {{ vote.vc.value }}: {{vote.totalVotes.value}}<br/>
+      {% endfor %}
+      <!-- translate this -->
+      Show Vote Records
+    </div>
+  </div>
+</div>
+{% endblock %}
