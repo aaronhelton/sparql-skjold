@@ -33,7 +33,10 @@
           {% for res in results %}
             {% for r in res.set %}
               {% if r.member_sessions %}
-                <li class="list-group-item">{{r.pref_label}} ({{r.count.value}})</li>
+                <li class="list-group-item">
+                  {{r.pref_label}} ({{r.count.value}})
+                  [<a href="{% url 'v2:select' %}?uri={{r.member_sessions.value}}&type=session">Show session</a>]
+                </li> 
               {% endif %}
             {% endfor %}
           {% endfor %}

@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'pure_pagination',
     'v2',
+    'thesaurus',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -109,7 +110,7 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
 )
 
-SPARQL_ENDPOINT = 'http://localhost:10035/catalogs/public/repositories/votedb'
+SPARQL_ENDPOINT = 'http://52.20.172.127:8000/catalogs/public/repositories/votedb'
 
 from django.utils.translation import ugettext_lazy as _
 

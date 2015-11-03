@@ -26,4 +26,5 @@ urlpatterns = [
 urlpatterns += i18n_patterns(
     #url(r'^$', include('v2.urls', namespace='v2')),
     url(r'^v2/', include('v2.urls', namespace='v2')),
+    url(r'^thesaurus/', include('thesaurus.urls', namespace='thesaurus')),
 )
