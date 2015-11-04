@@ -7,3 +7,7 @@
 .indent-4 {
         margin-left: 50px;
 }
+
+.td-undec {
+	border-top:none;
+}

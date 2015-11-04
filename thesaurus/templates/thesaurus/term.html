@@ -1,5 +1,136 @@
+{% extends 'base.html' %}
 {% block content %}
-  {% for res in results %}
-    {{ res }}
-  {% endfor %}
+<div class="container">
+	{% include 'thesaurus/thesaurus.html' %}
+  <div class="row">
+    <div class="col-md-12">
+      <h2>{{ pref_label }}
+		  	{% for t in rdf_types %}
+			  	<a href="{% url 'thesaurus:index' %}?aspect={{ t.label }}"><span class="badge">{{ t.label }}</span></a>
+					{% endfor %}
+			</h2>
+			{% for breadcrumb in breadcrumbs %}
+				<ol class="breadcrumb">
+				  <li><a href="{% url 'thesaurus:term' %}?uri={{ breadcrumb.domain.value }}">{{ breadcrumb.domain.pref_label }}</a></li>
+					{% if breadcrumb.microthesaurus %}
+						<li><a href="{% url 'thesaurus:term' %}?uri={{ breadcrumb.microthesaurus.value }}">{{ breadcrumb.microthesaurus.pref_label }}</a></li>
+					{% endif %}
+				</ol>
+			{% endfor %}
+			<div class="row">
+				<div class="col-md-6">
+					{% if scope_notes|length > 0 %}
+					<table class="table table-condensed">
+					  {% for sn in scope_notes %}
+						<tr class="info">
+						  <td style="border-top:none">SN</td><td style="border-top:none">{{ sn.skos_scopeNote.value }}</td>
+						</tr>
+						{% endfor %}
+					</table>
+					{% endif %}
+					{% if alt_labels|length > 0 %}
+					  <table class="table table-condensed">
+							{% for label in alt_labels %}
+							<tr>
+								<td style="border-top:none">UF</td>
+								<td style="border-top:none"><i>{{ label.skos_altLabel.value }}</i></td>								
+							</tr>
+							{% endfor %}
+						</table>
+					{% endif %}
+					{% if results|length > 0 %}
+	        <table class="table table-condensed">
+	          {% for res in results %}
+						  {% for rel in res.set %}
+							 <tr>
+							  {% if rel.skos_broader %}
+								  <td style="border-top:none">BT</td><td style="border-top:none"><a href="{% url 'thesaurus:term' %}?uri={{ rel.skos_broader.value }}">{{ rel.pref_label }}</a></td>
+								{% endif %}
+								{% if rel.skos_narrower %}
+								  <td style="border-top:none">NT</td><td style="border-top:none"><a href="{% url 'thesaurus:term' %}?uri={{ rel.skos_narrower.value }}">{{ rel.pref_label }}</a></td>
+								{% endif %}
+								{% if rel.skos_related %}
+								  <td style="border-top:none">RT</td><td style="border-top:none"><a href="{% url 'thesaurus:term' %}?uri={{ rel.skos_related.value }}">{{ rel.pref_label }}</a></td>
+								{% endif %}
+								{% if rel.skos_member %}
+								  <td style="border-top:none">Member</td><td style="border-top:none"><a href="{% url 'thesaurus:term' %}?uri={{ rel.skos_member.value }}">{{ rel.pref_label }}</a></td>
+								{% endif %}
+							</tr>
+							{% endfor %}
+						{% endfor %}
+	        </table>
+					{% endif %}
+				</div>
+				<div class="col-md-6">
+					<table class="table table-condensed">
+						<tr><th colspan="2" style="border-top:none">Language Equivalents</th></tr>
+						{% for label in pref_labels %}
+							<tr>
+								<td style="border-top:none">
+									{% if label.skos_prefLabel.keys.0 == 'xml:lang' %}
+									  {% if label.skos_prefLabel.values.0 == LANGUAGE_CODE %}
+										  <b>{{ label.skos_prefLabel.values.0|upper}}</b>
+										{% else %}
+											{{ label.skos_prefLabel.values.0|upper}}
+										{% endif %}
+									{% endif %}
+								</td>
+								<td style="border-top:none">
+									{% if label.skos_prefLabel.keys.0 == 'xml:lang' and label.skos_prefLabel.values.0 == LANGUAGE_CODE %}
+										<b>{{ label.skos_prefLabel.value }}</b>
+									{% else %}
+										{{ label.skos_prefLabel.value }}
+									{% endif %}
+									</td>
+						{% endfor %}
+					</table>
+					{% if matches|length > 0 %}
+					  <table class="table table-condensed">
+							{% for res in matches %}
+							  {% for match in res.set %}
+								{% if match.skos_broadMatch %}
+									<tr><th colspan="2" style="border-top:none">Has narrow match</th></tr>
+									<tr>
+										<td style="border-top:none">EuroVoc</td>
+										<td style="border-top:none"><a href="{{ match.skos_broadMatch.value }}" target="_">{{match.skos_broadMatch.value}}</a></td>
+									</tr>
+								{% endif %}
+								{% if match.skos_closeMatch %}
+									<tr><th colspan="2" style="border-top:none">Has close match</th></tr>
+									<tr>
+										<td style="border-top:none">EuroVoc</td>
+										<td style="border-top:none"><a href="{{ match.skos_closeMatch.value }}" target="_">{{match.skos_closeMatch.value}}</a></td>
+									</tr>
+								{% endif %}
+								{% if match.skos_exactMatch %}
+									<tr><th colspan="2" style="border-top:none">Has exact match</th></tr>
+									<tr>
+										<td style="border-top:none">EuroVoc</td>
+										<td style="border-top:none"><a href="{{ match.skos_exactMatch.value }}" target="_">{{match.skos_exactMatch.value}}</a></td>
+									</tr>
+								{% endif %}
+								{% if match.skos_narrowMatch %}
+									<tr><th colspan="2" style="border-top:none">Has broad match</th></tr>
+									<tr>
+										<td style="border-top:none">EuroVoc</td>
+										<td style="border-top:none"><a href="{{ match.skos_narrowMatch.value }}" target="_">{{match.skos_narrowMatch.value}}</a></td>
+									</tr>
+								{% endif %}
+								{% if match.skos_relatedMatch %}
+									<tr><th colspan="2" style="border-top:none">Has related match</th></tr>
+									<tr>
+										<td style="border-top:none">EuroVoc</td>
+										<td style="border-top:none"><a href="{{ match.skos_relatedMatch.value }}" target="_">{{match.skos_relatedMatch.value}}</a></td>
+									</tr>
+								{% endif %}
+								{% endfor %}
+							{% endfor %}
+						</table>
+					{% endif %}
+				</div>
+			</div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
