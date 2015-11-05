@@ -11,6 +11,8 @@ from icu import Collator, Locale
 from SPARQLWrapper import SPARQLWrapper, JSON, TURTLE, N3
 from v2.queries import QUERIES, get_preferred_label, get_all_labels
 from pure_pagination import Paginator, EmptyPage, PageNotAnInteger
+from .models import Cache
+import re, hashlib, json
 
 VOTEDB_ASPECTS = ['index','organizations','bodies','sessions','member_states']
 VOTEDB_TYPES = ['member_state','organization','body','session','vote_record']
@@ -32,38 +34,43 @@ def index(request):
   collator=Collator.createInstance(Locale(preferred_language))
   if 'aspect' in request.GET:
     aspect = request.GET['aspect']
-    if aspect in VOTEDB_ASPECTS:
-      sparql.setQuery(QUERIES[aspect])
-      sparql.setReturnFormat(JSON)
-      results = sparql.query().convert()["results"]["bindings"]
-      for res in results:
-        res["pref_label"] = get_preferred_label(res['x']['value'], preferred_language)
-      sorted_results = sorted(results, key=lambda tup: tup['pref_label'], cmp=collator.compare)
-      try:
-        page = request.GET.get('page', 1)
-      except PageNotAnInteger:
-        page = 1
-      p = Paginator(sorted_results,15,request=request)
-      paginated_results = p.page(page)
-      return render(request, 'v2/index.html', {'results': paginated_results, 'children':ASPECT_MAP[aspect]})
-    else:
-      raise Http404("Aspect not found")
   else:
     aspect = 'index'
-    sparql.setQuery(QUERIES[aspect])
+  
+  if aspect in VOTEDB_ASPECTS:
+    pass
+  else:
+    raise Http404("Aspect not found")
+    
+  querystring = QUERIES[aspect]
+  
+  m = hashlib.md5()
+  m.update(querystring)
+  md5 = m.hexdigest()
+  results = []
+  
+  try:
+    cache_object = Cache.objects.get(md5=md5, language=preferred_language)
+    results = cache_object.result_set
+  except Cache.DoesNotExist, e:
+    sparql.setQuery(querystring)
     sparql.setReturnFormat(JSON)
-    results = sparql.query().convert()["results"]["bindings"]
-    for res in results:
+    this_results = sparql.query().convert()["results"]["bindings"]
+        
+    for res in this_results:
       res["pref_label"] = get_preferred_label(res['x']['value'], preferred_language)
-    sorted_results = sorted(results, key=lambda tup: tup['pref_label'], cmp=collator.compare)
-    try:
-      page = request.GET.get('page', 1)
-    except PageNotAnInteger:
-      page = 1
-    p = Paginator(sorted_results,15,request=request)
-    paginated_results = p.page(page)
-
-    return render(request, 'v2/index.html', {'results': paginated_results, 'children':ASPECT_MAP[aspect]})
+      results.append(res)
+          
+    Cache.objects.update_or_create(md5=md5,language=preferred_language,result_set=results)
+          
+  sorted_results = sorted(results, key=lambda tup: tup['pref_label'], cmp=collator.compare)
+  try:
+    page = request.GET.get('page', 1)
+  except PageNotAnInteger:
+    page = 1
+  p = Paginator(sorted_results,15,request=request)
+  paginated_results = p.page(page)
+  return render(request, 'v2/index.html', {'results': paginated_results, 'children':ASPECT_MAP[aspect]})
   
 
 def select(request):
@@ -88,3 +95,13 @@ def select(request):
     #  raise Http404("Not found")
   else:
     raise Http404("Not found")
+    
+def search(request):
+  
+  return render(request, 'v2/search.html', {'results':paginated_results})
+  
+  
+def autocomplete(request):
+  
+  
+  return HttpResponse(json.dumps(results), content_type='application/json')

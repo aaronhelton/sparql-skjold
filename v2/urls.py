@@ -5,4 +5,6 @@ from v2 import views
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^select/$', views.select, name='select'),
+    url(r'^search/$', views.search, name='search'),
+    url(r'^autocomplete/$', views.autocomplete, name='autocomplete'),
 ]
