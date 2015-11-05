@@ -84,7 +84,7 @@ def index(request):
   except PageNotAnInteger:
     page = 1
     
-  p = Paginator(sorted_results, 15, request=request)
+  p = Paginator(sorted_results, 20, request=request)
   paginated_results = p.page(page)
 
   return render(request, 'thesaurus/index.html', {'results': paginated_results, 'target': target, 'aspect':aspect})
@@ -165,6 +165,57 @@ def term(request):
         matches.append({'name':t, 'set': this_results})
 
     return render(request, 'thesaurus/term.html', {'pref_label': pref_label, 'scope_notes': scope_notes, 'pref_labels': pref_labels, 'alt_labels': alt_labels, 'results': results, 'rdf_types': rdf_types, 'breadcrumbs': breadcrumbs, 'matches': matches})
+    
+    
+def search(request):
+  preferred_language = translation.get_language()
+  if request.GET:
+    if request.GET.get('q'):
+      q = request.GET['q']
+      querystring = "select ?s ?p ?o where { ?s ?p ?o . ?s rdf:type skos:Concept . ?s fti:match '" + q + "'}"
+      sparql.setQuery(querystring)
+      sparql.setReturnFormat(JSON)
+      this_results = sparql.query().convert()["results"]["bindings"]
+      matching_uris = []
+      for res in this_results:
+        matching_uris.append(res["s"]["value"])
+      
+      uris = set(matching_uris)
+      results = []
+      for u in uris:
+        results.append({'uri':u, 'pref_label':get_preferred_label(u,preferred_language)})
+      #print this_results
+      
+      try:
+        page = request.GET.get('page', 1)
+      except PageNotAnInteger:
+        page = 1
+    
+      p = Paginator(results, 20, request=request)
+      paginated_results = p.page(page)
+      
+      return render(request, 'thesaurus/search.html', {'results':paginated_results})
+      
+def autocomplete(request):
+  preferred_language = translation.get_language()
+  if request.GET:
+    if request.GET.get('q'):
+      q = request.GET['q']
+      querystring = "select ?s ?p ?o where { ?s ?p ?o . ?s rdf:type skos:Concept . ?s skos:prefLabel ?o . ?s fti:match '*" + q + "*'} limit 10"
+      sparql.setQuery(querystring)
+      sparql.setReturnFormat(JSON)
+      this_results = sparql.query().convert()["results"]["bindings"]
+      matching_uris = []
+      for res in this_results:
+        matching_uris.append(res["s"]["value"])
+      
+      uris = set(matching_uris)
+      results = []
+      for u in uris:
+        results.append({'url':u, 'value':get_preferred_label(u,preferred_language)})
+      #print this_results
+      
+      return HttpResponse(json.dumps(results), content_type='application/json')
     
     
 def get_preferred_label(uri,language):

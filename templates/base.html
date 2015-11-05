@@ -15,6 +15,8 @@
   <script type="text/javascript" src="{% static '/static/jquery-2.1.4.min.js' %}"></script>
   <script type="text/javascript" src="{% static '/static/jquery-ui.min.js' %}"></script>
   <script type="text/javascript" src="{% static '/static/bootstrap.min.js' %}"></script>
+	
+
 
 </head>
 {% if LANGUAGE_BIDI %}
@@ -34,7 +36,7 @@
         <ul class="nav navbar-nav">
           <li><a href="#">About</a></li>
           <li><a href="{% url 'v2:index' %}">Voting</a></li>
-          <li><a href="#">UNBIS Thesaurus</a></li>
+          <li><a href="{% url 'thesaurus:index' %}">UNBIS Thesaurus</a></li>
         </ul>
         <ul class="nav navbar-nav pull-right">
           <li ><a class="ar" href="#">ﺎﻠﻋﺮﺒﻳﺓ</a></li>
@@ -57,7 +59,7 @@
         new_loc = loc.replace("/{{ LANGUAGE_CODE }}/","/"+c[i]+"/");
         $( 'a.' + c[i] ).attr("href",new_loc);
       }
-      console.log(window.location);
+      
     });
   </script>
 
