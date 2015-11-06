@@ -65,7 +65,7 @@ def index(request):
     this_results = sparql.query().convert()["results"]["bindings"]
          
     for res in this_results:
-      if aspect == "by_type":
+      if aspect == "type":
         short_name = res["x"]["value"].split("#")[1]
         if short_name in NONROUTABLES:
           next
