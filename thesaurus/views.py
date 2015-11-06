@@ -19,8 +19,7 @@ from .models import Cache
 EV_ENDPOINT = 'http://open-data.europa.eu/sparqlep'
 NONROUTABLES = ["Alignment","Ontology","PlaceName"]
 
-#sparql = SPARQLWrapper('http://52.20.172.127:8000/catalogs/public/repositories/thesaurus')
-sparql = SPARQLWrapper('http://localhost:8080/marmotta/sparql')
+sparql = SPARQLWrapper('http://52.20.172.127:8000/catalogs/public/repositories/thesaurus')
 
 def index(request):
   preferred_language = translation.get_language()
