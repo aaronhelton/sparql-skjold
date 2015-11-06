@@ -25,6 +25,7 @@ ASPECT_MAP = {
 }
 AUTO_CHILDREN = {
   'member_state': ['member_sessions','member_vote_records'],
+  'session': ['session_vote_records'],
 }
 
 sparql = SPARQLWrapper(settings.SPARQL_ENDPOINT)

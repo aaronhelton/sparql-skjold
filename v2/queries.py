@@ -56,6 +56,15 @@ MEMBER_VOTE_RECORDS_QUERY = """
   } group by ?member_vote_records
 """
 
+SESSION_VOTE_RECORDS_QUERY = """
+  prefix undoc <http://unontologies.s3-website-us-east-1.amazonaws.com/undoc#>
+  select ?session_vote_record
+  where {
+    ?session_vote_record rdf:type undoc:VoteRecord .
+    ?session_vote_record undoc:inSession <{{replaceme}}> .
+  }
+"""
+
 QUERIES = {
   'index':MEMBER_STATES_QUERY,
   'organization':ORGANIZATION_QUERY,
@@ -64,6 +73,7 @@ QUERIES = {
   'member_states':MEMBER_STATES_QUERY,
   'member_sessions':MEMBER_SESSIONS_QUERY,
   'member_vote_records':MEMBER_VOTE_RECORDS_QUERY,
+  'sessions':SESSION_VOTE_RECORDS_QUERY,
 }
 
 

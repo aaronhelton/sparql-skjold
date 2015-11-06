@@ -59,7 +59,7 @@ ROOT_URLCONF = 'skjold.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates'],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -110,6 +110,7 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
 )
 
+#this needs to be moved to the individual app/context areas
 SPARQL_ENDPOINT = 'http://52.20.172.127:8000/catalogs/public/repositories/votedb'
 
 from django.utils.translation import ugettext_lazy as _
