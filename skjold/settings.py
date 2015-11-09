@@ -38,7 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'pure_pagination',
-    'v2',
+    #'v2',
     'thesaurus',
 )
 

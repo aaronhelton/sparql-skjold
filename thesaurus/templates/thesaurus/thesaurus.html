@@ -15,7 +15,7 @@
 	</script>
 <ul class="nav nav-tabs">
   <li role="presentation"><a href="{% url 'thesaurus:index' %}?aspect=categories">Browse Categories</a></li>
-  <li role="presentation"><a href="{% url 'thesaurus:index' %}?aspect=alphabetical">Browse Alphabetical</a></li>
+  <!-- <li role="presentation"><a href="{% url 'thesaurus:index' %}?aspect=alphabetical">Browse Alphabetical</a></li> -->
   <li role="presentation"><a href="{% url 'thesaurus:index' %}?aspect=by_type">Browse By Type</a></li>
 	<form class="navbar-form navbar-right" role="search" method="get" action="{% url 'thesaurus:search' %}">
 		<input type="text" class="form-control" id="q" name="q">

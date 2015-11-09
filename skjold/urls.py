@@ -18,13 +18,16 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
+from django.views.generic import RedirectView
 
 urlpatterns = [
+    url(r'^$', RedirectView.as_view(url='http://52.20.172.127/thesaurus/'), name='thesaurus'),
     url(r'^admin/', include(admin.site.urls)),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 urlpatterns += i18n_patterns(
     #url(r'^$', include('v2.urls', namespace='v2')),
-    url(r'^v2/', include('v2.urls', namespace='v2')),
+    # this is not a good solution
+    #url(r'^v2/', include('v2.urls', namespace='v2')),
     url(r'^thesaurus/', include('thesaurus.urls', namespace='thesaurus')),
 )

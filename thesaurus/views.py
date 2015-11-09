@@ -17,7 +17,7 @@ from .models import Cache
 # use this to resolve labels from UNBIS Thesaurus -> (owl:sameAs mappings) -> EuroVoc alignments 
 # characterized as skos:exactMatch
 EV_ENDPOINT = 'http://open-data.europa.eu/sparqlep'
-NONROUTABLES = ["Alignment","Ontology","PlaceName"]
+NONROUTABLES = ["Alignment","Ontology","PlaceName","Concept","ConceptScheme"]
 
 sparql = SPARQLWrapper('http://52.20.172.127:8000/catalogs/public/repositories/thesaurus')
 
@@ -26,9 +26,11 @@ def index(request):
   querystring = ""
   target="instances"
   collator = Collator.createInstance(Locale(preferred_language))
+  aspect = 'categories'
   
-  if request.GET and request.GET['aspect']:
-    aspect = request.GET['aspect']
+  if request.GET:
+    if request.GET.get('aspect'):
+      aspect = request.GET['aspect']
   else:
     aspect = 'categories'
     
