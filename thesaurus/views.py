@@ -101,6 +101,7 @@ def term(request):
     local_children = ["skos:broader","skos:narrower","skos:related", "skos:member"]
     remote_children = ["skos:exactMatch", "skos:relatedMatch"]
     mirror_children = ["skos:broadMatch", "skos:narrowMatch", "skos:closeMatch"]
+    descriptives = ["dcterms:description"]
     
     types_q = "prefix skos: <http://www.w3.org/2004/02/skos/core#> prefix unbist: <http://unontologies.s3-website-us-east-1.amazonaws.com/unbist#> select ?rdf_type where { <" + uri + "> rdf:type ?rdf_type . }"
     breadcrumbs_q = "prefix skos: <http://www.w3.org/2004/02/skos/core#> prefix unbist: <http://unontologies.s3-website-us-east-1.amazonaws.com/unbist#> prefix eu: <http://eurovoc.europa.eu/schema#> select ?domain ?microthesaurus where { { ?domain skos:member ?microthesaurus . ?microthesaurus skos:member <" + uri + "> . } union { ?domain rdf:type eu:Domain . ?domain skos:member <" + uri + "> } . }"
@@ -166,7 +167,17 @@ def term(request):
       if len(this_results) > 0:
         matches.append({'name':t, 'set': this_results})
 
-    return render(request, 'thesaurus/term.html', {'pref_label': pref_label, 'scope_notes': scope_notes, 'pref_labels': pref_labels, 'alt_labels': alt_labels, 'results': results, 'rdf_types': rdf_types, 'breadcrumbs': breadcrumbs, 'matches': matches})
+    descriptions = []
+    for d in descriptives:
+      querystring = "select ?" + d.replace(":","_") + " where { <" + uri + "> " + d + " ?" + d.replace(":","_") + " filter(lang(?" + d.replace(":","_") + ") = '" + preferred_language + "') }"
+      print(querystring)
+      sparql.setQuery(querystring)
+      sparql.setReturnFormat(JSON)
+      this_results = sparql.query().convert()["results"]["bindings"]
+      if len(this_results) > 0:
+        descriptions.append({'name':d, 'set': this_results})
+
+    return render(request, 'thesaurus/term.html', {'pref_label': pref_label, 'scope_notes': scope_notes, 'pref_labels': pref_labels, 'alt_labels': alt_labels, 'results': results, 'rdf_types': rdf_types, 'breadcrumbs': breadcrumbs, 'matches': matches, 'descriptions': descriptions})
     
     
 def search(request):
@@ -250,7 +261,6 @@ def autocomplete(request):
         ?s fti:match '*""" + q + """*' . 
         filter not exists { ?s rdf:type unbist:PlaceName } 
       } limit 10"""
-      print(querystring)
       sparql.setQuery(querystring)
       sparql.setReturnFormat(JSON)
       this_results = sparql.query().convert()["results"]["bindings"]
