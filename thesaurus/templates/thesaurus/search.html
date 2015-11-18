@@ -5,6 +5,7 @@
 	{% include 'thesaurus/thesaurus.html' %}
   <div class="row">
     <div class="col-md-12">
+	        {{ results }}
 			<h2>Search results for {{ request.GET.q }}</h2>
 			{% for res in results.object_list %}
 					<a href="{% url 'thesaurus:term' %}?uri={{res.uri}}">{{ res.pref_label }}</a><br/>

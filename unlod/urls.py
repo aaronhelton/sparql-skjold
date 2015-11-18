@@ -1,4 +1,4 @@
-"""skjold URL Configuration
+"""unlod URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/1.8/topics/http/urls/
@@ -21,13 +21,9 @@ from django.conf.urls.static import static
 from django.views.generic import RedirectView
 
 urlpatterns = [
-    url(r'^$', RedirectView.as_view(url='http://52.20.172.127:8080/thesaurus/'), name='thesaurus'),
     url(r'^admin/', include(admin.site.urls)),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 urlpatterns += i18n_patterns(
-    #url(r'^$', include('v2.urls', namespace='v2')),
-    # this is not a good solution
-    #url(r'^v2/', include('v2.urls', namespace='v2')),
     url(r'^thesaurus/', include('thesaurus.urls', namespace='thesaurus')),
 )

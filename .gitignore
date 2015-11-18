@@ -3,3 +3,8 @@ db.sqlite3
 venv
 venv/*
 ._*
+db
+db/*
+log*
+semdata
+semdata/*

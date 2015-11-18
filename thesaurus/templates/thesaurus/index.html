@@ -9,7 +9,7 @@
 			  {% if target == 'classes' %}
 					<a href="{% url 'thesaurus:index' %}?aspect={{res.pref_label}}">{{ res.pref_label }}</a><br/>
 				{% elif target == 'instances' %}
-					<a href="{% url 'thesaurus:term' %}?uri={{res.x.value}}">{{ res.pref_label }}</a><br/>
+					<a href="{% url 'thesaurus:term' %}?uri={{res.uri}}">{{ res.pref_label }}</a><br/>
 				{% endif %}
 			{% endfor %}
 		</div>
