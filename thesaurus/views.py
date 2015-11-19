@@ -71,7 +71,7 @@ def index(request):
   p = Paginator(sorted_results, 20, request=request)
   paginated_results = p.page(page)
 
-  return render(request, 'thesaurus/index.html', {'results': paginated_results, 'target': 'instances' })
+  return render(request, 'thesaurus/index.html', {'results': paginated_results, 'target': 'instances', 'aspect':aspect })
 
 def term(request):
   preferred_language = translation.get_language()
