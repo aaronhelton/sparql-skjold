@@ -8,3 +8,4 @@ db/*
 log*
 semdata
 semdata/*
+gunicorn_start.sh
