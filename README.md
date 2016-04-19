@@ -10,6 +10,6 @@ Note I am using some libraries that didn't play nicely with Python3. I've forked
 * https://github.com/aaronhelton/django-pure-pagination
 * https://github.com/aaronhelton/elasticpy
 
-There is no quickstart. This isn't really intended to be reused by others, but the code could serve as a reference in case others want to learn.
+There is no quickstart. This isn't really intended to be reused by others, but the code could serve as a reference in case others want to learn. 
 
-I still have a good deal of cleanup to do and some management commands to write. 
+I am abandoning this project in favor of something that is a bit less specific to thesauri. Nearly three years of thought and work in and around linked data have given me some ideas that I hope to distill into something better and more general-purpose.
